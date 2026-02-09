@@ -46,14 +46,11 @@ namespace NChess.Core.Notation
                 : FenConstants.StartPosition;
 
             result = tagDict.TryGetValue("Result", out var r) ? r : "*";
-
-            // 2) movetext (вырезаем теги)
+            
             var movetext = TagRegex.Replace(pgn, " ");
-
-            // 3) токенизация SAN + {comment} (вариации/;/$n базово игнорим)
+            
             var tokens = TokenizeMovetext(movetext);
-
-            // 4) SAN -> Move на временной позиции
+            
             var position = new Position();
             FenUtils.Load(startFen, position);
 

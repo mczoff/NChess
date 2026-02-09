@@ -2,10 +2,9 @@
 
 var chess = new Chess();
 
-chess.TryMoveUci("e2e4");
 
-var legalMoves = chess.LegalMoves().ToList();
-var legalMovesUci = chess.LegalMovesUci().ToList();
-var legalMovesSan = chess.LegalMovesSan().ToList();
+var pgnGame = await File.ReadAllTextAsync("./Resources/lichess.pgn");
 
+chess.ImportPgn(pgnGame); 
+    
 Console.WriteLine(chess.Fen);

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using NChess.Core.Common;
 using NChess.Core.Engine.Abstractions;
 using NChess.Core.Moves;
@@ -38,19 +39,25 @@ namespace NChess.Core.Notation
         public static string Format(Position position, IChessEngine engine, Move move)
         {
             if (move.IsCastling)
-            {
                 return move.To.File > move.From.File ? "O-O" : "O-O-O";
+
+            var moved = position.GetPiece(move.From)!.Value;
+
+            var sb = new StringBuilder(12);
+
+            if (moved.Type != PieceType.Pawn)
+            {
+                sb.Append(PieceLetter(moved.Type));
+
+                var dis = GetDisambiguation(position, engine, move, moved.Type, moved.Color);
+                if (dis != null)
+                    sb.Append(dis);
             }
-
-            var sb = new StringBuilder(8);
-
-            var piece = position.GetPiece(move.From)!.Value;
-
-            if (piece.Type != PieceType.Pawn)
-                sb.Append(PieceLetter(piece.Type));
-
-            if (piece.Type == PieceType.Pawn && move.IsCapture)
-                sb.Append((char)('a' + (int)move.From.File));
+            else
+            {
+                if (move.IsCapture)
+                    sb.Append((char)('a' + (int)move.From.File));
+            }
 
             if (move.IsCapture)
                 sb.Append('x');
@@ -63,27 +70,61 @@ namespace NChess.Core.Notation
                 sb.Append(PieceLetter(move.Promotion!.Value));
             }
 
-            var engineResult = engine.MakeMove(position, move);
-
-            if (engineResult.IsOk)
-            {
-                var undo = engineResult.Value;
-                var inCheck = !engine.GenerateLegalMoves(position).GetEnumerator().MoveNext()
-                    ? "#"
-                    : engine.GenerateLegalMoves(position) != null && IsCheck(position, engine)
-                        ? "+"
-                        : "";
-
-                engine.UndoMove(position, undo);
-                sb.Append(inCheck);
-            }
-
             return sb.ToString();
         }
 
         private static bool IsCheck(Position position, IChessEngine engine)
             => engine.Attacks.IsKingInCheck(position, position.SideToMove);
 
+        private static string GetDisambiguation(
+            Position position,
+            IChessEngine engine,
+            Move move,
+            PieceType type,
+            Color color)
+        {
+            var candidates = engine.GenerateLegalMoves(position)
+                .Where(m =>
+                {
+                    if (m.To != move.To) return false;
+                    if (m.From == move.From) return false;
+                    var p = position.GetPiece(m.From);
+                    return p.HasValue && p.Value.Type == type && p.Value.Color == color;
+                })
+                .ToList();
+
+            if (candidates.Count == 0)
+                return null;
+            
+            var needFile = candidates.Any(m => m.From.File != move.From.File);
+            var needRank = candidates.Any(m => m.From.Rank != move.From.Rank);
+            
+            if (needFile)
+            {
+                var fileChar = (char)('a' + (int)move.From.File);
+                
+                var sameFileExists = candidates.Any(m => m.From.File == move.From.File);
+                if (!sameFileExists)
+                    return fileChar.ToString();
+                
+                if (needRank)
+                {
+                    var rankChar = (char)('1' + (int)move.From.Rank);
+                    return fileChar.ToString() + rankChar;
+                }
+
+                return fileChar.ToString();
+            }
+            
+            if (needRank)
+            {
+                var rankChar = (char)('1' + (int)move.From.Rank);
+                return rankChar.ToString();
+            }
+
+            return null;
+        }
+        
         private static char PieceLetter(PieceType t)
         {
             return t switch

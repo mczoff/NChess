@@ -11,4 +11,10 @@
       <ProjectReference Include="..\src\NChess\NChess.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Resources\lichess.pgn">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
