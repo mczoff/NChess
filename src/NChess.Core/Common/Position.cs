@@ -24,10 +24,10 @@ namespace NChess.Core.Common
         private void ResetToEmpty()
         {
             SideToMove = Color.White;
-            // Castling = CastlingRights.None;
-            // EnPassantSquare = null;
-            // HalfmoveClock = 0;
-            // FullmoveNumber = 1;
+            Castling = CastlingRights.None;
+            EnPassantSquare = null;
+            HalfmoveClock = 0;
+            FullmoveNumber = 1;
         }
 
         public void SetPiece(Square square, Piece piece) => _board[square] = piece;

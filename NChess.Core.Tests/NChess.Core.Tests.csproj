@@ -20,4 +20,8 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\src\NChess.Core\NChess.Core.csproj" />
+    </ItemGroup>
+
 </Project>

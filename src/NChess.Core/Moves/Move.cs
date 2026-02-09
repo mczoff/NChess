@@ -9,10 +9,12 @@ namespace NChess.Core.Moves
     {
         public Square From { get; }
         public Square To { get; }
-        
+
         public PieceType? Promotion { get; }
-        
+
         public MoveFlags Flags { get; }
+
+        public string? Comment { get; }
 
         public MoveKind Kind
         {
@@ -25,32 +27,45 @@ namespace NChess.Core.Moves
                 return MoveKind.Quiet;
             }
         }
-        
+
         public bool IsCapture => (Flags & MoveFlags.Capture) != 0;
         public bool IsPromotion => (Flags & MoveFlags.Promotion) != 0;
         public bool IsEnPassant => (Flags & MoveFlags.EnPassant) != 0;
         public bool IsCastling => (Flags & MoveFlags.Castling) != 0;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Move(Square from, Square to, MoveFlags flags = MoveFlags.None, PieceType? promotion = null)
+        public Move(
+            Square from,
+            Square to,
+            MoveFlags flags = MoveFlags.None,
+            PieceType? promotion = null,
+            string? comment = null)
         {
             if (promotion.HasValue && (flags & MoveFlags.Promotion) == 0)
-                throw new ArgumentException("Promotion piece specified but Promotion flag is not set.", nameof(promotion));
-            
+                throw new ArgumentException("Promotion piece specified but Promotion flag is not set.",
+                    nameof(promotion));
+
             if ((flags & MoveFlags.Promotion) != 0)
             {
                 if (!promotion.HasValue)
-                    throw new ArgumentException("Promotion flag is set but promotion piece is not specified.", nameof(promotion));
+                    throw new ArgumentException("Promotion flag is set but promotion piece is not specified.",
+                        nameof(promotion));
 
                 if (!IsValidPromotion(promotion.Value))
-                    throw new ArgumentOutOfRangeException(nameof(promotion), "Promotion must be Queen, Rook, Bishop, or Knight.");
+                    throw new ArgumentOutOfRangeException(nameof(promotion),
+                        "Promotion must be Queen, Rook, Bishop, or Knight.");
             }
 
             From = from;
             To = to;
             Flags = flags;
             Promotion = promotion;
+            Comment = comment;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Move WithComment(string? comment)
+            => new Move(From, To, Flags, Promotion, comment);
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsValidPromotion(PieceType type)
@@ -58,25 +73,24 @@ namespace NChess.Core.Moves
                || type == PieceType.Rook
                || type == PieceType.Bishop
                || type == PieceType.Knight;
-        
-        
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static char PromotionToChar(PieceType type)
         {
             if (IsValidPromotion(type))
                 throw new ArgumentException("Promotion piece specified but Promotion flag is not set.", nameof(type));
 
-            switch (type)
+            return type switch
             {
-                case PieceType.Queen:  return 'q';
-                case PieceType.Rook:   return 'r';
-                case PieceType.Bishop: return 'b';
-                case PieceType.Knight: return 'n';
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), "Invalid promotion piece.");
-            }
+                PieceType.Queen => 'q',
+                PieceType.Rook => 'r',
+                PieceType.Bishop => 'b',
+                PieceType.Knight => 'n',
+                _ => throw new ArgumentOutOfRangeException(nameof(type), "Invalid promotion piece.")
+            };
         }
-        
+
         public bool Equals(Move other)
             => From == other.From
                && To == other.To
