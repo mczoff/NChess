@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NChess", "src\NChess\NChess.csproj", "{599440A7-4F1C-415F-87C0-CA59558A34D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NChess", "NChess\NChess.csproj", "{599440A7-4F1C-415F-87C0-CA59558A34D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NChess.Core", "src\NChess.Core\NChess.Core.csproj", "{54B00052-D667-4666-9EC1-D5394566C35E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NChess.Core", "NChess.Core\NChess.Core.csproj", "{54B00052-D667-4666-9EC1-D5394566C35E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NChess.Console", "NChess.Console\NChess.Console.csproj", "{2482ED54-3999-4E3F-A516-8A81BA6C94A3}"
 EndProject
