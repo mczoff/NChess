@@ -1,6 +1,6 @@
 # NChess
 
-**NChess** is a lightweight, pure C# chess core focused on correctness, clarity, and extensibility.  
+**NChess** is pure C# chess core focused on correctness, clarity, and extensibility.  
 This is an **early alpha release (v0.0.1-alpha)** intended for engine development, analysis tools, and chess-related experiments.
 
 ---
